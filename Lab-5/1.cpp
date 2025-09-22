@@ -1,12 +1,11 @@
 #include <iostream>
 using namespace std;
 
-void printNumbers(int n) {
-    if (n <= 0) {
-        return;
+int calculateFactorial(int n) {
+    if (n == 0 || n == 1) {
+        return 1; 
     }
-    cout << n << " ";
-    printNumbers(n - 1);
+    return n * calculateFactorial(n - 1);
 }
 
 int main() {
@@ -14,9 +13,6 @@ int main() {
     cout << "Enter a number: ";
     cin >> num;
 
-    cout << "Numbers from " << num << " down to 1 are: ";
-    printNumbers(num);
-    cout << endl;
-
+    cout << "Factorial of " << num << " = " << calculateFactorial(num) << endl;
     return 0;
 }
