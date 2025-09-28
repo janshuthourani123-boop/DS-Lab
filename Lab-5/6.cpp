@@ -1,10 +1,9 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
 #define N 4
 
-void printSolution(const vector<vector<int>> &sol) {
+void printSolution(int sol[N][N]) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++)
             cout << sol[i][j] << " ";
@@ -12,11 +11,11 @@ void printSolution(const vector<vector<int>> &sol) {
     }
 }
 
-bool isSafe(int x, int y, const vector<vector<int>> &maze, const vector<vector<int>> &visited) {
+bool isSafe(int x, int y, int maze[N][N], int visited[N][N]) {
     return (x >= 0 && x < N && y >= 0 && y < N && maze[x][y] == 1 && visited[x][y] == 0);
 }
 
-bool solveMazeUtil(int x, int y, const vector<vector<int>> &maze, vector<vector<int>> &visited, vector<vector<int>> &sol) {
+bool solveMazeUtil(int x, int y, int maze[N][N], int visited[N][N], int sol[N][N]) {
     if (x == N - 1 && y == N - 1) {
         sol[x][y] = 1;
         return true;
@@ -41,13 +40,15 @@ bool solveMazeUtil(int x, int y, const vector<vector<int>> &maze, vector<vector<
     return false;
 }
 
-bool solveMaze(const vector<vector<int>> &maze) {
-    vector<vector<int>> sol(N, vector<int>(N, 0));
-    vector<vector<int>> visited(N, vector<int>(N, 0));
+bool solveMaze(int maze[N][N]) {
+    int sol[N][N] = {0};
+    int visited[N][N] = {0};
+
     if (maze[0][0] == 0) {
         cout << "No path found" << endl;
         return false;
     }
+
     if (solveMazeUtil(0, 0, maze, visited, sol)) {
         printSolution(sol);
         return true;
@@ -58,7 +59,7 @@ bool solveMaze(const vector<vector<int>> &maze) {
 }
 
 int main() {
-    vector<vector<int>> maze = {
+    int maze[N][N] = {
         {1, 0, 0, 0},
         {1, 1, 0, 1},
         {0, 1, 0, 0},
