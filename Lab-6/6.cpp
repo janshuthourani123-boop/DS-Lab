@@ -15,6 +15,16 @@ public:
     bool isEmpty() { return top == -1; }
 };
 
+class IntStack {
+    int arr[MAX];
+    int top;
+public:
+    IntStack() { top = -1; }
+    void push(int val) { if (top < MAX - 1) arr[++top] = val; }
+    int pop() { return (top == -1) ? 0 : arr[top--]; }
+    bool isEmpty() { return top == -1; }
+};
+
 int precedence(char op) {
     if (op == '^') return 3;
     if (op == '*' || op == '/') return 2;
@@ -24,6 +34,10 @@ int precedence(char op) {
 
 bool isOperator(char c) {
     return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
+}
+
+bool isRightAssociative(char op) {
+    return op == '^';
 }
 
 string reverseString(string s) {
@@ -42,17 +56,19 @@ string infixToPostfix(string infix) {
     for (int i = 0; i < infix.length(); i++) {
         char c = infix[i];
         if (c == ' ') continue;
-        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        if (isdigit(c)) {
             postfix += c;
         } else if (c == '(') {
             s.push(c);
         } else if (c == ')') {
-            while (!s.isEmpty() && s.peek() != '(') {
+            while (!s.isEmpty() && s.peek() != '(')
                 postfix += s.pop();
-            }
             if (!s.isEmpty()) s.pop();
         } else if (isOperator(c)) {
-            while (!s.isEmpty() && precedence(s.peek()) >= precedence(c)) {
+            while (!s.isEmpty() && 
+                   ((precedence(s.peek()) > precedence(c)) || 
+                   (precedence(s.peek()) == precedence(c) && !isRightAssociative(c))) && 
+                   s.peek() != '(') {
                 postfix += s.pop();
             }
             s.push(c);
@@ -70,11 +86,37 @@ string infixToPrefix(string infix) {
     return prefix;
 }
 
+int evaluatePrefix(string prefix) {
+    IntStack s;
+    for (int i = prefix.length() - 1; i >= 0; i--) {
+        char c = prefix[i];
+        if (c == ' ') continue;
+        if (isdigit(c)) {
+            s.push(c - '0');
+        } else if (isOperator(c)) {
+            int a = s.pop();
+            int b = s.pop();
+            int result = 0;
+            if (c == '+') result = a + b;
+            else if (c == '-') result = a - b;
+            else if (c == '*') result = a * b;
+            else if (c == '/') result = a / b;
+            else if (c == '^') {
+                result = 1;
+                for (int j = 0; j < b; j++) result *= a;
+            }
+            s.push(result);
+        }
+    }
+    return s.pop();
+}
+
 int main() {
     string infix;
     cout << "Enter infix expression: ";
     getline(cin, infix);
     string prefix = infixToPrefix(infix);
     cout << "Prefix: " << prefix << endl;
+    cout << "Result: " << evaluatePrefix(prefix) << endl;
     return 0;
 }
